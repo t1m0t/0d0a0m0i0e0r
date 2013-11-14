@@ -3,7 +3,7 @@ var Case = function(x,y,color) { //couleur de la forme #ffffff
 	this.x     = x; //coordonné abscisse
 	this.y     = y; //coordonné ordonnné (x,y)
 	this.color = color;
-	this.state = { element: "empty", side: "none" }; //détermine si un pion est dessus et de quel coté il est
+	//this.state = { element: "empty", side: "none" }; //détermine si un pion est dessus et de quel coté il est
 	this._init.call(this);
 }
 
@@ -14,7 +14,7 @@ Case.prototype = {
 		//if(this.color) this.color = '#C1B4D6';
 		var HTMLcase              = '<div class="case'+this.color+'" id="x'+this.x+'y'+this.y+'"></div>';
 		return $(".damier").append(HTMLcase);
-	},
+	}/*,
 	hasElement: function() { //pour déterminer si un élément est positionné sur la case (faire un apply this si necessaire)
 		var coord = 'x'+this.x+'y'+this.y;
 		return $('#'+coord).find(".pion") || $('#'+coord).find(".dame") ? false : true; //ternaire  qui renvoi un booléen
@@ -28,5 +28,5 @@ Case.prototype = {
 	},
 	getState : function () { //attention : il faudra surement faire un apply()
 		return this.state.element+':'+this.state.side;
-	}
+	}*/
 }

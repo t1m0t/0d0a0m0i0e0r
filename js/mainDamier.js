@@ -1,5 +1,8 @@
 /* MAIN */
 
 $(document).ready(function() {
-	var damier = new Damier();
+	var player = new Player();
+	//console.log(player.side);
+	var damier = new Damier(player.side);
+	damier.updatePossibleMooves.apply(damier);
 });

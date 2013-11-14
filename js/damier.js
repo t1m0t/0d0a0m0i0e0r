@@ -1,6 +1,9 @@
 //définition de la classe Damier
-var Damier = function () {
+var Damier = function (playerSide) {
+	if (arguments[0] < 0 || arguments[0] > 1) throw new Error('Bad argument, expected 1 or 0, had '+playerSide);
 	this.state = new Array(); //position des pions sur le damier
+	this.playerSide = playerSide == '1' ? 'a' : 'b';
+	this.adverseSide = playerSide == '1' ? 'b' : 'a';
 	this._initCases.apply(this);
 	this._initPions.apply(this);
 }
@@ -25,29 +28,28 @@ Damier.prototype = {
 				if((x%2==0 || y%2==0) && (x%2==1 || y%2==1)) { //si une case est xy pair ou impair
 					this.state[x] = new Array();
 					if(y>=6 ) {
-						this.state[x][y] = 'b0'; //pionBlanc
-						new Pion(x,y,'a',0);
-						//console.log(this.state[x][y]+': '+x+y);
+						this.state[x][y] = new Pion(x,y,this.playerSide,0); 
 					}
 					if(y<=3) {
-						this.state[x][y] = 'a0'; //pionNoir
-						new Pion(x,y,'b',0);
-						//console.log(this.state[x][y]+': '+x+y);
+						this.state[x][y] = new Pion(x,y,this.adverseSide,0);
 					}
 				}
 			}
 		}
 	},
-	updateState: function(posCase,element) { 
-		var type = ['a0','a1','b0','b1'];
-		if(!(
-			posCase.x >= 0 && posCase.x <= 9 &&
-			posCase.y >= 0 && posCase.y <= 9 &&
-			element in type
-			)) throw new Error('Bad arguments');
-		else return this.state[posCase.x][posCase.y] = element;
+	/* Cette fonction va scaner toutes les cases où il y a des poins et déterminer pour chacun les mouvements possibles */
+	updatePossibleMooves: function() { //avec un apply(damier) dans le main
+		for(var y=0;y<=9;y++){
+			for (var x=0;x<=9;x++){
+				//console.log('x:'+x+' y:'+y);
+				if(!this.state[x][y]) continue;
+				//console.log(this.state.toString());
+				//console.log(this.playerSide);
+				this.state[x][y].possibleMooves(this.state,x,y,this.playerSide);
+			}
+		}
 	},
 	getState: function() {
 		return this.state; //faire un apply avec l'objet damier si nécessaire, pour appeler la fonction
-	}
+	},
 }
