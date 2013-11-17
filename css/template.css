@@ -1,0 +1,37 @@
+.case1, .case0 {
+  float: left;
+  height: 50px;
+  width: 50px;
+}
+
+.case1:hover {
+  /*opacity: 0;*/
+  background-color: #DFE6F2;
+}
+
+.case1 {
+  background-color: #C1B4D6;
+}
+
+.case0 {
+  background-color: #FFFF99;
+}
+
+.damier {
+  height: 500px;
+  width: 500px;
+  /*box-shadow: 3px 3px 3px purple,
+              3px -3px 3px blue;*/
+  border-style: solid;
+  border-width: 2px;
+}
+
+.messageBox {
+  float: right;
+  width: 500px;
+  overflow: scroll;
+  margin-top: -580px;
+  margin-right: 800px;
+  width: 500px;
+  height: 500px;
+}
