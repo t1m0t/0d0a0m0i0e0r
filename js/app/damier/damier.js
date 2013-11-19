@@ -68,10 +68,17 @@ define([
 			},
 			getState: function() {
 				return this.state; //faire un apply avec l'objet damier si nécessaire, pour appeler la fonction
-			}/*,
-			setState: function(stateup) {
-				return this.state = stateup; //faire un apply avec l'objet damier si nécessaire, pour appeler la fonction
-			},*/
+			},
+			getPionById: function(id) {
+				for(var y=0;y<=9;y++){
+					for (var x=0;x<=9;x++){
+						if(this.state[x][y] !== undefined) {
+							//console.log(this.state[x][y].pId == id);
+							if(this.state[x][y].pId == id) return this.state[x][y];
+						}
+					}
+				}
+			}
 		}
 
 		return Damier;
