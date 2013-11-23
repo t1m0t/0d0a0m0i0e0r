@@ -15,8 +15,8 @@ define([], function () {
 		addMoove: function (x,y) {
 			return this.mooves.push({'x':x,'y':y});
 		},
-		addMarked: function (x,y) {
-			return this.marked.push({'x':x,'y':y});
+		addMarked: function (x,y,id) {
+			return this.marked.push({'x':x,'y':y, 'by': {'id':id}});
 		},
 		getMooves: function () {
 			return this.mooves;
@@ -24,11 +24,18 @@ define([], function () {
 		getMarked: function () {
 			return this.marked;
 		},
-		isMarked: function (x,y) {
+		isMarked: function (x,y,pId) {
 			this.marked.forEach(function (v) {
-				if(v.x != 'undefined' && v.y != 'undefined') {
-					if(v.x == x && v.y == y) return true;
-					else return false;
+				if(v.x !== undefined && v.y !== undefined) {
+					console.log('Demande par '+pId+' si pion marqué case('+x+','+y+') ?');
+					if(v.x == x && v.y == y && v.by.id == pId) {
+						console.log('Oui, pion bien marqué par '+pId);
+						return true;
+					} 
+					else {
+						console.log('Non, pion non marqué par '+pId);
+						return false;
+					} 
 				}
 			});
 		}

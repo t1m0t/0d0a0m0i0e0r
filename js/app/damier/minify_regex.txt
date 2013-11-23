@@ -1,3 +1,0 @@
-regex pour minifier :
-\/{2}(.*)$|/\*(?s:.*?)\*/|^\s*//.*|\n|\t
-Fonctionne sur Sublime Text 2
