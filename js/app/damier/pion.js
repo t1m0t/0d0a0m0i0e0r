@@ -56,14 +56,14 @@ define([
 				
 				var kind        = damierState[x][y].kind; //renvoi normalement O ou 1 : 0 pour pion et 1 pour dame
 				
-				var params 					= new Object();
-				params.x 					= x;
-				params.y 					= y;
-				params.damierState			= damierState;
-				params.initialCPCollection 	= undefined;
-				params.playerSide			= playerSide;
-				params.pionId				= damierState[x][y].pId;
-				params.firstMoove			= true;
+				var params 									= new Object();
+				params.x 										= x;
+				params.y 										= y;
+				params.damierState					= damierState;
+				params.initialCPCollection 	= new Array();
+				params.playerSide						= playerSide;
+				params.pionId								= damierState[x][y].pId;
+				params.firstMoove						= true;
 
 				/* 2 cas possibles : soit c'est un pion ou soit une dame */
 				// 1er cas pour le pion
@@ -86,28 +86,26 @@ define([
 					return {
 						incrBranch: function ()  {return x++;},
 						getBranchs: function ()  {return x;},
-						reset: 		function ()  {return x = 0;},
+						reset: 			function ()  {return x = 0;},
 						setBranch: 	function (n) {return x = n;}
 					};
 				})();
 
 				//extraction des parametres dans params
-				var x 				= params.x;
-				var y 				= params.y;
+				var x 						= params.x;
+				var y 						= params.y;
 				var damierState 	= params.damierState;
-				var CPCollection 	= params.initialCPCollection !== undefined ? params.initialCPCollection : [0]; //on recupere un tableau si récursivité
-				var mySide 			= params.playerSide;
-				var pionId			= params.pionId;
-				var firstMoove 		= params.firstMoove == true ? true : false;
+				var CPCollection 	= params.initialCPCollection; //on recupere un tableau si récursivité
+				var mySide 				= params.playerSide;
+				var pionId				= params.pionId;
+				var firstMoove 		= params.firstMoove;
 				var indexRecur		= params.indexRecur;
+				var possibleIndex = params.possibleIndex || 0;
 
-				//si récupération d'un CPCollection non vide
-				if(CPCollection.length > 1) {
-					possiblesIndex.setBranch(CPCollection.length-1);
-					//console.log(possiblesIndex.getBranchs());
-				}
+				possiblesIndex.setBranch(possibleIndex);
 
-				if(possiblesIndex.getBranchs() > 20 || CPCollection[possiblesIndex.getBranchs()].length > 20 || indexRecur > 10) return;
+
+				if(possiblesIndex.getBranchs() > 20 || indexRecur > 10) return;
 
 				CPCollection[possiblesIndex.getBranchs()] = new PossibleMoove();
 
@@ -148,19 +146,32 @@ define([
 									console.log('- - - - firstMoove is: '+firstMoove);
 
 									if(!isCaseEmpty) {
-										var isNextNotMySide		= damierState[i][j].side != mySide; 
-										var isNextNextCaseEmpty = corners[a].nI(i) >= 0 && corners[a].nI(i) <= 9 && corners[a].nJ(j) >= 0 && corners[a].nJ(j) <= 9 && damierState[corners[a].nI(i)][corners[a].nJ(j)] === undefined;
-										var isNextNotMarked		= !CPCollection[possiblesIndex.getBranchs()].isMarked(i,j,pionId);
+										var isNextNotMySide			= damierState[i][j].side != mySide; 
+										var isNextNextCaseEmpty 	= '';
+										//var isNextNextNotVisited	= '';
+										if( corners[a].nI(i) >= 0 && 
+											corners[a].nI(i) <= 9 && 
+											corners[a].nJ(j) >= 0 && 
+											corners[a].nJ(j) <= 9 ) {
+											if (damierState[corners[a].nI(i)][corners[a].nJ(j)] === undefined) 
+												isNextNextCaseEmpty = true;
+											else isNextNextCaseEmpty = false;
+											/*if (!CPCollection[possiblesIndex.getBranchs()].isVisited(corners[a].nI(i),corners[a].nJ(j)))
+												isNextNextNotVisited = true
+											else isNextNextCaseEmpty = false;*/
+										}
+										var isNextNotMarked		= !CPCollection[possiblesIndex.getBranchs()].isMarked(i,j);
 										console.log('- - - - - isNextNotMySide '+isNextNotMySide);
 										console.log('- - - - - isNextNextCaseEmpty '+isNextNextCaseEmpty+' case('+corners[a].nI(i)+','+corners[a].nJ(j)+')');
 										console.log('- - - - - isNextNotMarked '+isNextNotMarked);
+										//console.log('- - - - - isNextNextNotVisited '+isNextNextNotVisited);
 
 									}
 									else {
 										console.log('- - - - - isCaseEmpty '+isCaseEmpty);
 									}
 
-									if(isNextNotMySide && isNextNextCaseEmpty && isNextNotMarked && !isCaseEmpty) { // si la case d'après est vide et si le pion sauté n'est pas déjà marqué
+									if(isNextNotMySide && isNextNextCaseEmpty && isNextNotMarked && !isCaseEmpty /*&& isNextNextNotVisited*/) { // si la case d'après est vide et si le pion sauté n'est pas déjà marqué
 										console.log('- - - - - - Cas case avec pion adverse et case vide après');
 										if (countPossible > 0) { // si > 0 alors nouvelle branche => nécessite new PossibleMoove et en parametre l'ancienne branche
 											console.log('- - - - - - - Création nouvelle branche');
@@ -175,20 +186,24 @@ define([
 										}
 
 										//on ajoute le mouvement (le saut) et le pion marqué (pion sauté)
-										console.log(corners[a].nI(i)+' '+ corners[a].nJ(j));
+										
 										CPCollection[possiblesIndex.getBranchs()].addMoove(corners[a].nI(i),corners[a].nJ(j));
-										CPCollection[possiblesIndex.getBranchs()].addMarked(i,j,pionId);
-										countPossible++;
+										CPCollection[possiblesIndex.getBranchs()].addMarked(i,j);
+										//countPossible++;
 
-										var newParams 					= new Object();
-										newParams.x 					= corners[a].nI(i);
-										newParams.y 					= corners[a].nJ(j);
-										newParams.damierState			= damierState;
-										newParams.initialCPCollection 	= CPCollection;
-										newParams.playerSide			= mySide;
-										newParams.pionId				= pionId;
-										newParams.firstMoove			= false;
-										newParams.indexRecur			= indexRecur+1;
+										console.log(CPCollection[possiblesIndex.getBranchs()].mooves.length);
+										console.log(CPCollection[possiblesIndex.getBranchs()].marked.length);
+
+										var newParams 								= new Object();
+										newParams.x 									= corners[a].nI(i);
+										newParams.y 									= corners[a].nJ(j);
+										newParams.damierState					= damierState;
+										newParams.initialCPCollection = CPCollection;
+										newParams.playerSide					= mySide;
+										//newParams.pionId						= pionId;
+										newParams.firstMoove					= false;
+										//newParams.indexRecur				= indexRecur+1;
+										newParams.possibleIndex				= possiblesIndex.getBranchs();
 
 										console.log('Recursivité avec newParams : x:'+newParams.x+' y:'+newParams.y);
 										this._checkPions(newParams);
